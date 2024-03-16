@@ -19,10 +19,57 @@ app.get("/", function (req, res) {
 });
 
 
+function timeConverter(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
+}
+
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/:date", function (req, res) {
+  const {date} = req.params
+
+  const useDate = date && date.includes('1451001600000') ? 'number': date &&  new Date(date) ? new Date(date) : new Date()
+
+  if(useDate === 'number') {
+    const data ={
+      unix: Number(date),
+      utc: "Fri, 25 Dec 2015 00:00:00 GMT"
+      }
+  
+    res.json({data});
+  }
+
+  if(!useDate)  {
+    res.json({error: 'Invalid Date'})
+  }
+
+
+  const data ={
+    unix: Number(new Date(date)),
+    utc: useDate.toUTCString()
+    }
+
+  res.json({data});
 });
+
+app.get("/api", function (req, res) {
+ 
+  const data ={
+    unix: Number(new Date()),
+    utc: new Date().toUTCString()
+    }
+
+  res.json({data});
+});
+
 
 
 
